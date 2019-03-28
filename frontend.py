@@ -102,10 +102,39 @@ class Example(QWidget):
         zpyEdit = QLineEdit()
         sourceEdit = QLineEdit()
 
-        viewall_button = QPushButton('View All', self)
+        clearAll_button = QPushButton('Clear Fields', self)
         add_button = QPushButton('Add', self)
         update_button = QPushButton('Update', self)
-        close_button = QPushButton('Close', self)
+        close_button = QPushButton('Exit', self)
+
+        def addClicked(self):
+            data = [designationEdit.text(), massEdit.text(), areaEdit.text(), dEdit.text(),
+            bEdit.text(), twEdit.text(), tEdit.text(), flangeslopeEdit.text(), r1Edit.text(),
+            r2Edit.text(), lzEdit.text(), lyEdit.text(), rzEdit.text(), ryEdit.text(), zzEdit.text(),
+            zyEdit.text(), zpzEdit.text(), zpyEdit.text() , sourceEdit.text()]
+            # print(data)
+            # temp = designationEdit.text()
+            backend.setDataToDB(data)
+            listing.clear()
+            showData()
+            # print("Add button clicked:", temp)
+
+        def clearAllClicked(self):
+            designationEdit.setText(""), massEdit.setText(""), areaEdit.setText(""), dEdit.setText(""),
+            bEdit.setText(""), twEdit.setText(""), tEdit.setText(""), flangeslopeEdit.setText(""), r1Edit.setText("")
+            r2Edit.setText(""), lzEdit.setText(""), lyEdit.setText(""), rzEdit.setText(""), ryEdit.setText(""), zzEdit.setText(""),
+            zyEdit.setText(""), zpzEdit.setText(""), zpyEdit.setText(""), sourceEdit.setText("")
+
+
+        # def clearList():
+        #     listing.clear()
+
+        add_button.clicked.connect(addClicked)
+        clearAll_button.clicked.connect(clearAllClicked)
+
+
+        
+
 
         grid = QGridLayout()
         grid.setSpacing(10)
@@ -165,7 +194,7 @@ class Example(QWidget):
         # grid.addWidget(review, 6, 0)
         grid.addWidget(listing, 6, 0, 8, 5)
 
-        grid.addWidget(viewall_button, 7, 6)
+        grid.addWidget(clearAll_button, 7, 6)
         grid.addWidget(add_button, 7, 7)
         grid.addWidget(update_button, 8, 6)
         grid.addWidget(close_button, 8, 7)
@@ -175,24 +204,34 @@ class Example(QWidget):
         def Clicked(item):
             row1 = backend.show_details(item.text())
             # print(row1)
-            designationEdit.setText(str(row1[0][1]))
+            designationEdit.setText(str(row1[0][1])), massEdit.setText(str(row1[0][2])), areaEdit.setText(str(row1[0][3]))
+            dEdit.setText(str(row1[0][4])), bEdit.setText(str(row1[0][5])), twEdit.setText(str(row1[0][6])), tEdit.setText(str(row1[0][7])),
+            flangeslopeEdit.setText(str(row1[0][8])), r1Edit.setText(str(row1[0][9])), r2Edit.setText(str(row1[0][10])), 
+            lzEdit.setText(str(row1[0][11])), lyEdit.setText(str(row1[0][12])), rzEdit.setText(str(row1[0][13])), ryEdit.setText(str(row1[0][14])),
+            zzEdit.setText(str(row1[0][15])), zyEdit.setText(str(row1[0][16])), zpzEdit.setText(str(row1[0][17])), zpyEdit.setText(str(row1[0][18])),
+            sourceEdit.setText(str(row1[0][19]))
+
+        listing.itemClicked.connect(Clicked)
 
             # print(item.text())
       #QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())
 
+        def showData():
 
-        for row in backend.show_beams():
+            for row in backend.show_beams():
+                print(row)
+                listing.addItem(row[1])
             # self.myTableWidget.setItem(row, col, QtGui.QTableWidgetItem(sqlRow[col]))
 
             # Following line to be added for printing list with item number and designation
             # listing.addItem('{}  {}'.format(row[0],row[1]))
 
-            listing.addItem(row[1])
+            # listing.addItem(row[1])
+        showData()
 
 
             # print (listing.currentRow())
 
-        listing.itemClicked.connect(Clicked)
 
 
 #####################################################################################################################
