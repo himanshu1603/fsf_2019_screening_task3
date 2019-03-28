@@ -1,7 +1,9 @@
 import sys
 from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, 
-    QTextEdit, QGridLayout, QApplication, QPushButton)
+    QTextEdit, QGridLayout, QApplication, QPushButton, QListWidget)
 from PyQt5.QtCore import *
+
+import backend
 
 
 class Example(QWidget):
@@ -72,13 +74,13 @@ class Example(QWidget):
         source = QLabel('Source')
         source.setAlignment(Qt.AlignRight)
 
-        review = QLabel('Review')
+        view = QLabel('View')
 
 
         # titleEdit = QLineEdit()
         # titleEdit1 = QLineEdit()
         # authorEdit = QLineEdit()
-        reviewEdit = QTextEdit()
+        listing = QListWidget(self)
 
         designationEdit = QLineEdit()
         massEdit = QLineEdit()
@@ -161,12 +163,42 @@ class Example(QWidget):
 
 
         # grid.addWidget(review, 6, 0)
-        grid.addWidget(reviewEdit, 6, 0, 8, 5)
+        grid.addWidget(listing, 6, 0, 8, 5)
 
         grid.addWidget(viewall_button, 7, 6)
         grid.addWidget(add_button, 7, 7)
         grid.addWidget(update_button, 8, 6)
         grid.addWidget(close_button, 8, 7)
+
+#################################################################################################################
+
+        def Clicked(item):
+            row1 = backend.show_details(item.text())
+            # print(row1)
+            designationEdit.setText(str(row1[0][1]))
+
+            # print(item.text())
+      #QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())
+
+
+        for row in backend.show_beams():
+            # self.myTableWidget.setItem(row, col, QtGui.QTableWidgetItem(sqlRow[col]))
+
+            # Following line to be added for printing list with item number and designation
+            # listing.addItem('{}  {}'.format(row[0],row[1]))
+
+            listing.addItem(row[1])
+
+
+            # print (listing.currentRow())
+
+        listing.itemClicked.connect(Clicked)
+
+
+#####################################################################################################################
+
+
+
         
         self.setLayout(grid) 
         
