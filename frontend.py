@@ -1,20 +1,26 @@
 import sys
 from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, 
-    QTextEdit, QGridLayout, QApplication, QPushButton, QListWidget)
+    QTextEdit, QGridLayout, QApplication, QPushButton, QListWidget,QComboBox,QMessageBox,QErrorMessage)
 from PyQt5.QtCore import *
 
 import backend
+import dictnry
+
+with open("log.txt", "w") as f:  
+    f.write("1")
 
 
 class Example(QWidget):
     
+    
     def __init__(self):
         super().__init__()
-        
         self.initUI()
         
         
+        
     def initUI(self):
+
         
 
         designation = QLabel('Designation')
@@ -47,11 +53,11 @@ class Example(QWidget):
         r2 = QLabel('R2')
         r2.setAlignment(Qt.AlignRight)
 
-        lz = QLabel('lz')
-        lz.setAlignment(Qt.AlignRight)
+        iz = QLabel('Iz')
+        iz.setAlignment(Qt.AlignRight)
 
-        ly = QLabel('ly')
-        ly.setAlignment(Qt.AlignRight)
+        iy = QLabel('Iy')
+        iy.setAlignment(Qt.AlignRight)
 
         rz = QLabel('rz')
         rz.setAlignment(Qt.AlignRight)
@@ -74,13 +80,53 @@ class Example(QWidget):
         source = QLabel('Source')
         source.setAlignment(Qt.AlignRight)
 
+        type1 = QLabel('Type')
+        type1.setAlignment(Qt.AlignRight)
+
+        select = QLabel('Select Type:')
+        select.setAlignment(Qt.AlignRight)
+
+        cy = QLabel('Cy')
+        cy.setAlignment(Qt.AlignRight)
+
+        cz = QLabel('Cz')
+        cz.setAlignment(Qt.AlignRight)
+
+        iuMax = QLabel('Iu(max)')
+        iuMax.setAlignment(Qt.AlignRight)
+
+        ivMin = QLabel('Iv(min)')
+        ivMin.setAlignment(Qt.AlignRight)
+
+        ruMax = QLabel('ru(max)')
+        ruMax.setAlignment(Qt.AlignRight)
+
+        rvMin = QLabel('rv(min)')
+        rvMin.setAlignment(Qt.AlignRight)
+
+        axb = QLabel('AXB')
+        axb.setAlignment(Qt.AlignRight)
+
+        tan = QLabel('Tan?')
+        tan.setAlignment(Qt.AlignRight)
+
+
+        
+
         view = QLabel('View')
 
 
-        # titleEdit = QLineEdit()
-        # titleEdit1 = QLineEdit()
-        # authorEdit = QLineEdit()
+        selectBox = QComboBox(self)
+        # selectBox.addItem("Select Any")
+        selectBox.addItem("Angles")
+        selectBox.addItem("Beams")
+        selectBox.addItem("Channels")
+
+
+
         listing = QListWidget(self)
+
+        
 
         designationEdit = QLineEdit()
         massEdit = QLineEdit()
@@ -92,8 +138,8 @@ class Example(QWidget):
         flangeslopeEdit = QLineEdit()
         r1Edit = QLineEdit()
         r2Edit = QLineEdit()
-        lzEdit = QLineEdit()
-        lyEdit = QLineEdit()
+        izEdit = QLineEdit()
+        iyEdit = QLineEdit()
         rzEdit = QLineEdit()
         ryEdit = QLineEdit()
         zzEdit = QLineEdit()
@@ -101,6 +147,16 @@ class Example(QWidget):
         zpzEdit = QLineEdit()
         zpyEdit = QLineEdit()
         sourceEdit = QLineEdit()
+        type1Edit = QLineEdit()
+        cyEdit = QLineEdit()
+        iuMaxEdit = QLineEdit()
+        ivMinEdit = QLineEdit()
+        ruMaxEdit = QLineEdit()
+        rvMinEdit = QLineEdit()
+        axbEdit = QLineEdit()
+        tanEdit = QLineEdit()
+        czEdit = QLineEdit()
+
 
         clearAll_button = QPushButton('Clear Fields', self)
         add_button = QPushButton('Add', self)
@@ -108,139 +164,275 @@ class Example(QWidget):
         close_button = QPushButton('Exit', self)
 
         def addClicked(self):
-            data = [designationEdit.text(), massEdit.text(), areaEdit.text(), dEdit.text(),
-            bEdit.text(), twEdit.text(), tEdit.text(), flangeslopeEdit.text(), r1Edit.text(),
-            r2Edit.text(), lzEdit.text(), lyEdit.text(), rzEdit.text(), ryEdit.text(), zzEdit.text(),
-            zyEdit.text(), zpzEdit.text(), zpyEdit.text() , sourceEdit.text()]
-            # print(data)
-            # temp = designationEdit.text()
-            backend.setDataToDB(data)
-            listing.clear()
-            showData()
-            # print("Add button clicked:", temp)
+
+            table = type1Edit.text()
+
+            data = []
+
+            if table == "Angles":
+                wle = [designationEdit,massEdit,areaEdit,axbEdit,tEdit,r1Edit,r2Edit,czEdit ,cyEdit,tanEdit,izEdit,iyEdit,iuMaxEdit,ivMinEdit,rzEdit,ryEdit,ruMaxEdit,rvMinEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in wle:
+                    data.append(i.text())
+                backend.setDataToDB(data, table)
+
+            elif table == "Beams":
+                wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in wle:
+                    data.append(i.text())
+                backend.setDataToDB(data, table)
+
+            elif table == "Channels":
+                wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,cyEdit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in wle:
+                    data.append(i.text())
+                backend.setDataToDB(data, table)
+            else:
+                showDialog()
+                listing.clear()
+
+            
 
         def clearAllClicked(self):
-            designationEdit.setText(""), massEdit.setText(""), areaEdit.setText(""), dEdit.setText(""),
-            bEdit.setText(""), twEdit.setText(""), tEdit.setText(""), flangeslopeEdit.setText(""), r1Edit.setText("")
-            r2Edit.setText(""), lzEdit.setText(""), lyEdit.setText(""), rzEdit.setText(""), ryEdit.setText(""), zzEdit.setText(""),
-            zyEdit.setText(""), zpzEdit.setText(""), zpyEdit.setText(""), sourceEdit.setText("")
+            if dictnry.Type[designationEdit.text()] == "Angles":
+                wle = [designationEdit,massEdit,areaEdit,axbEdit,tEdit,r1Edit,r2Edit,czEdit ,cyEdit,tanEdit,izEdit,iyEdit,iuMaxEdit,ivMinEdit,rzEdit,ryEdit,ruMaxEdit,rvMinEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in range(24):
+                    wle[i].setText("")
 
+            elif dictnry.Type[designationEdit.text()] == "Beams":
+                wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in range(20):
+                    wle[i].setText("")
 
-        # def clearList():
-        #     listing.clear()
+            elif dictnry.Type[designationEdit.text()] == "Channels":
+                wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,cyEdit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in range(21):
+                    wle[i].setText("")
+
 
         add_button.clicked.connect(addClicked)
         clearAll_button.clicked.connect(clearAllClicked)
 
+        close_button.clicked.connect(self.close)
 
-        
+        def showDialog():
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage("Error!! <br>You have entered wrong value for type field. <br>Allowed values are 'Angles', 'Beams' and 'Channels'")
+            grid.addWidget(error_dialog,10,3,11,5)
 
+            # grid.removeWidget(error_dialog)
 
         grid = QGridLayout()
         grid.setSpacing(10)
 
-        grid.addWidget(designation, 1, 0)
-        grid.addWidget(designationEdit, 1, 1)
-        grid.addWidget(mass, 1, 2)
-        grid.addWidget(massEdit, 1, 3)
+        ############  ANGLES######
 
-        grid.addWidget(area, 1, 4)
-        grid.addWidget(areaEdit, 1, 5)
-        grid.addWidget(d, 1, 6)
-        grid.addWidget(dEdit, 1, 7)
+        def A():
+            wl = [designation,mass,area,axb,t,r1,r2,cz,cy,tan,iz,iy,iuMax,ivMin,rz,ry,ruMax,rvMin,zz,zy,zpz,zpy,source,type1]
+            wle = [designationEdit,massEdit,areaEdit,axbEdit,tEdit,r1Edit,r2Edit,czEdit ,cyEdit,tanEdit,izEdit,iyEdit,iuMaxEdit,ivMinEdit,rzEdit,ryEdit,ruMaxEdit,rvMinEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+            for i in range(24):
+                grid.addWidget(wl[i],(i//4)+1, (2*i)%8)
+            for i in range(24):
+                grid.addWidget(wle[i],((i)//4)+1,(2*i+1)%8)
 
-        grid.addWidget(b, 2, 0)
-        grid.addWidget(bEdit, 2, 1)
-        grid.addWidget(tw, 2, 2)
-        grid.addWidget(twEdit, 2, 3)
+           
 
-        grid.addWidget(t, 2, 4)
-        grid.addWidget(tEdit, 2, 5)
-        grid.addWidget(flangeslope, 2, 6)
-        grid.addWidget(flangeslopeEdit, 2, 7)
+            grid.addWidget(select, 7, 0)
+            grid.addWidget(selectBox, 7, 1)
 
-        grid.addWidget(r1, 3, 0)
-        grid.addWidget(r1Edit, 3, 1)
-        grid.addWidget(r2, 3, 2)
-        grid.addWidget(r2Edit, 3, 3)
+                
+            grid.addWidget(listing, 8, 0, 10, 4)
 
-        grid.addWidget(lz, 3, 4)
-        grid.addWidget(lzEdit, 3, 5)
-        grid.addWidget(ly, 3, 6)
-        grid.addWidget(lyEdit, 3, 7)
+            grid.addWidget(clearAll_button, 9, 6)
+            grid.addWidget(add_button, 9, 7)
+            grid.addWidget(update_button, 10, 6)
+            grid.addWidget(close_button, 10, 7)  
 
-        grid.addWidget(rz, 4, 0)
-        grid.addWidget(rzEdit, 4, 1)
-        grid.addWidget(ry, 4, 2)
-        grid.addWidget(ryEdit, 4, 3)
 
-        grid.addWidget(zz, 4, 4)
-        grid.addWidget(zzEdit, 4, 5)
-        grid.addWidget(zy, 4, 6)
-        grid.addWidget(zyEdit, 4, 7)
+        def destroyA():
+            wl = [designation,mass,area,axb,t,r1,r2,cz,cy,tan,iz,iy,iuMax,ivMin,rz,ry,ruMax,rvMin,zz,zy,zpz,zpy,source,type1]
+            wle = [designationEdit,massEdit,areaEdit,axbEdit,tEdit,r1Edit,r2Edit,czEdit ,cyEdit,tanEdit,izEdit,iyEdit,iuMaxEdit,ivMinEdit,rzEdit,ryEdit,ruMaxEdit,rvMinEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+            for i in range(24):
+                grid.removeWidget(wl[i])
+            for i in range(24):
+                grid.removeWidget(wle[i])
 
-        grid.addWidget(zpz, 5, 0)
-        grid.addWidget(zpzEdit, 5, 1)
-        grid.addWidget(zpy, 5, 2)
-        grid.addWidget(zpyEdit, 5, 3)
+            others = [select, selectBox, listing, clearAll_button, add_button, update_button,close_button]
 
-        grid.addWidget(source, 5, 4)
-        grid.addWidget(sourceEdit, 5, 5)
-        # grid.addWidget(d, 5, 6)
-        # grid.addWidget(dEdit, 5, 7)
+            for i in others:
+                grid.removeWidget(i)
 
 
 
-        # grid.addWidget(review, 6, 0)
-        grid.addWidget(listing, 6, 0, 8, 5)
+        ######   BEAMS####
 
-        grid.addWidget(clearAll_button, 7, 6)
-        grid.addWidget(add_button, 7, 7)
-        grid.addWidget(update_button, 8, 6)
-        grid.addWidget(close_button, 8, 7)
+        def B():
 
-#################################################################################################################
+            wl = [designation,mass,area,d,b,tw,t,flangeslope,r1,r2,iz,iy,rz,ry,zz,zy,zpz,zpy,source,type1]
+            wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+
+            for i in range(20):
+                grid.addWidget(wl[i],(i//4)+1, (2*i)%8)
+            for i in range(20):
+                grid.addWidget(wle[i],((i)//4)+1,(2*i+1)%8)
+
+            
+
+            grid.addWidget(select, 6, 0)
+            grid.addWidget(selectBox, 6, 1)
+
+                
+            grid.addWidget(listing, 7, 0, 9, 4)
+
+            grid.addWidget(clearAll_button, 8, 6)
+            grid.addWidget(add_button, 8, 7)
+            grid.addWidget(update_button, 9, 6)
+            grid.addWidget(close_button, 9, 7) 
+
+
+        def destroyB():
+            wl = [designation,mass,area,d,b,tw,t,flangeslope,r1,r2,iz,iy,rz,ry,zz,zy,zpz,zpy,source,type1]
+            wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+
+            for i in range(20):
+                grid.removeWidget(wl[i])
+            for i in range(20):
+                grid.removeWidget(wle[i])
+
+            others = [select, selectBox, listing, clearAll_button, add_button, update_button,close_button]
+
+            for i in others:
+                grid.removeWidget(i)
+
+   
+        ############################### CHANNELS################
+        def C():
+            wl = [designation,mass,area,d,b,tw,t,flangeslope,r1,r2,cy,iz,iy,rz,ry,zz,zy,zpz,zpy,source,type1]
+            wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,cyEdit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+
+            for i in range(21):
+                grid.addWidget(wl[i],(i//4)+1, (2*i)%8)
+            for i in range(21):
+                grid.addWidget(wle[i],((i)//4)+1,(2*i+1)%8)
+
+            grid.addWidget(select, 7, 0)
+            grid.addWidget(selectBox, 7, 1)
+
+                
+            grid.addWidget(listing, 8, 0, 10, 4)
+
+            grid.addWidget(clearAll_button, 9, 6)
+            grid.addWidget(add_button, 9, 7)
+            grid.addWidget(update_button, 10, 6)
+            grid.addWidget(close_button, 10, 7)
+
+        def destroyC():
+            wl = [designation,mass,area,d,b,tw,t,flangeslope,r1,r2,cy,iz,iy,rz,ry,zz,zy,zpz,zpy,source,type1]
+            wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,cyEdit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+
+            for i in range(21):
+                grid.removeWidget(wl[i])
+            for i in range(21):
+                grid.removeWidget(wle[i])
+
+            others = [select, selectBox, listing, clearAll_button, add_button, update_button,close_button]
+
+            for i in others:
+                grid.removeWidget(i)
+
+
+        A()
+
+        def destroy():
+
+            wlA = [designation,mass,area,axb,t,r1,r2,cz,cy,tan,iz,iy,iuMax,ivMin,rz,ry,ruMax,rvMin,zz,zy,zpz,zpy,source,type1]
+            wleA = [designationEdit,massEdit,areaEdit,axbEdit,tEdit,r1Edit,r2Edit,czEdit ,cyEdit,tanEdit,izEdit,iyEdit,iuMaxEdit,ivMinEdit,rzEdit,ryEdit,ruMaxEdit,rvMinEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+            wlC = [designation,mass,area,d,b,tw,t,flangeslope,r1,r2,cy,iz,iy,rz,ry,zz,zy,zpz,zpy,source,type1]
+            wleC = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,cyEdit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+            others = [select, selectBox, listing, clearAll_button, add_button, update_button,close_button]
+
+
+            allWidgets = wlA + wleA + wlC + wleC + others 
+
+            set1 = set(allWidgets)
+
+            allWidgets = list(set1)
+
+            for i in allWidgets:
+                grid.removeWidget(i)
+
+
+ 
+            
+
+
+
+
+        def style_choice(text):
+            
+            
+            listing.clear()  
+    
+            destroy()
+
+            
+            
+            if text == "Angles":
+                A()
+            
+            elif text == "Beams":
+                B()
+                
+            elif text == "Channels":
+                C()
+                
+            showData(text)
+            
+         
+
+        selectBox.activated[str].connect(style_choice)
+        
+
+
 
         def Clicked(item):
             row1 = backend.show_details(item.text())
             # print(row1)
-            designationEdit.setText(str(row1[0][1])), massEdit.setText(str(row1[0][2])), areaEdit.setText(str(row1[0][3]))
-            dEdit.setText(str(row1[0][4])), bEdit.setText(str(row1[0][5])), twEdit.setText(str(row1[0][6])), tEdit.setText(str(row1[0][7])),
-            flangeslopeEdit.setText(str(row1[0][8])), r1Edit.setText(str(row1[0][9])), r2Edit.setText(str(row1[0][10])), 
-            lzEdit.setText(str(row1[0][11])), lyEdit.setText(str(row1[0][12])), rzEdit.setText(str(row1[0][13])), ryEdit.setText(str(row1[0][14])),
-            zzEdit.setText(str(row1[0][15])), zyEdit.setText(str(row1[0][16])), zpzEdit.setText(str(row1[0][17])), zpyEdit.setText(str(row1[0][18])),
-            sourceEdit.setText(str(row1[0][19]))
+
+
+
+            if dictnry.Type[item.text()] == "Angles":
+
+                wle = [designationEdit,massEdit,areaEdit,axbEdit,tEdit,r1Edit,r2Edit,czEdit ,cyEdit,tanEdit,izEdit,iyEdit,iuMaxEdit,ivMinEdit,rzEdit,ryEdit,ruMaxEdit,rvMinEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in range(23):
+                    wle[i].setText(str(row1[0][i+1]))
+
+                type1Edit.setText(dictnry.Type[str(row1[0][1])])
+
+            if dictnry.Type[item.text()] == "Beams":
+                wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in range(19):
+                    wle[i].setText(str(row1[0][i+1]))
+                    type1Edit.setText(dictnry.Type[str(row1[0][1])])
+
+            if dictnry.Type[item.text()] == "Channels":
+                wle = [designationEdit,massEdit,areaEdit,dEdit,bEdit,twEdit,tEdit,flangeslopeEdit ,r1Edit,r2Edit,cyEdit,izEdit,iyEdit,rzEdit,ryEdit,zzEdit,zyEdit,zpzEdit,zpyEdit,sourceEdit,type1Edit]
+                for i in range(20):
+                    wle[i].setText(str(row1[0][i+1]))
+                    type1Edit.setText(dictnry.Type[str(row1[0][1])])
+
+
+
+           
 
         listing.itemClicked.connect(Clicked)
 
-            # print(item.text())
-      #QMessageBox.information(self, "ListWidget", "You clicked: "+item.text())
+        def showData(table):
 
-        def showData():
-
-            for row in backend.show_beams():
-                print(row)
+            for row in backend.show_designations(table):
                 listing.addItem(row[1])
-            # self.myTableWidget.setItem(row, col, QtGui.QTableWidgetItem(sqlRow[col]))
 
-            # Following line to be added for printing list with item number and designation
-            # listing.addItem('{}  {}'.format(row[0],row[1]))
+        self.setLayout(grid)
 
-            # listing.addItem(row[1])
-        showData()
-
-
-            # print (listing.currentRow())
-
-
-
-#####################################################################################################################
-
-
-
-        
-        self.setLayout(grid) 
-        
         self.setGeometry(300, 300, 650, 600)
         self.setWindowTitle('Review')    
         self.show()
